@@ -1,0 +1,25 @@
+<div ng-controller="MoviesCtrl" ng-init="load();">
+    <h2>{{movies.length}} movies available</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Rating</th>
+                <th>Available</th>
+                <th>onSale</th>
+                <th>Action</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="movie in movies">
+                <td>{{movie.title | uppercase }}</td>
+                <td>{{movie.rating}}</td>
+                <td>{{movie.available}}</td>
+                <td>{{movie | isonsale}}</td>
+                <td><button ng-click="rentOrReturn(movie.id);">{{movie.action}}</button></td>
+                <td><a href="#/movies/{{movie.id}}">detail</a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

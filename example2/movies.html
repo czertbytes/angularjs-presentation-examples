@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html ng-app="Example2">
+    <head>
+        <meta charset="utf-8">
+        <title>My movies</title>
+        <script src="../angular.min.js"></script>
+    </head>
+    <body ng-controller="MoviesCtrl">
+        <h1>My movies</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Rating</th>
+                    <th>Available</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="movie in movies | orderBy: 'rating' :true | filter:{available: true}">
+                    <td>{{movie.title | uppercase }}</td>
+                    <td>{{movie.rating}}</td>
+                    <td>{{movie.available}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <script>
+            var app = angular.module('Example2', []);
+
+            app.controller('MoviesCtrl', ['$scope', 'Movies', function($scope, Movies) {
+                $scope.movies = Movies;
+            }]);
+
+            app.factory('Movies', function () {
+                var Movies = [
+                  {
+                    title: 'The Shawshank Redemption',
+                    year: 1994,
+                    rating: 9.2,
+                    available: true,
+                    imdbLink: "http://www.imdb.com/title/tt0111161/"
+                  },
+                  {
+                    title: 'Pulp Fiction',
+                    year: 1994,
+                    rating: 9.0,
+                    available: true,
+                    imdbLink: "http://www.imdb.com/title/tt0110912/"
+                  },
+                  {
+                    title: 'The Godfather',
+                    year: 1972,
+                    rating: 9.2,
+                    available: false,
+                    imdbLink: "http://www.imdb.com/title/tt0068646/"
+                  }];
+                  return Movies;
+              });
+                  
+        </script>
+    </body>
+</html>

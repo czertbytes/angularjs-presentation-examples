@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html ng-app="Example7">
+    <head>
+        <meta charset="utf-8">
+        <title>Movies</title>
+        <script src="angular.min.js"></script>
+    </head>
+    <body>
+        <h1>My Video Club</h1>
+
+        <div ng-view></div>
+
+        <script>
+            var app = angular.module('Example7', []);
+
+            app.config(['$routeProvider', function($routeProvider) {
+              $routeProvider
+                .when('/movies', {templateUrl: 'partials/movies-list.html', controller: 'MoviesCtrl'})
+                .when('/movies/:movieId', {templateUrl: 'partials/movie-detail.html', controller: 'MovieDetailCtrl'})
+                .otherwise({redirectTo: '/movies'});
+            }]);
+
+            app.controller('MoviesCtrl', ['$scope', '$http', function($scope, $http) {
+                $scope.movies = [];
+
+                $scope.load = function() {
+                    $http.get('http://localhost:8000/data/movies.json').success(function (data) {
+                         $scope.movies = data;
+                         $scope.updateActions();
+                    });
+                };
+
+                $scope.updateActions = function() {
+                    angular.forEach($scope.movies, function(movie) {
+                        movie.action = $scope.getAction(movie.available);
+                    });
+                }
+
+                $scope.rentOrReturn = function(id) {
+                    oldMovies = $scope.movies;
+                    $scope.movies = [];
+                    angular.forEach(oldMovies, function(movie) {
+                        if (movie.id == id) {
+                            movie.available = !movie.available;
+                        }
+
+                        movie.action = $scope.getAction(movie.available);
+
+                        $scope.movies.push(movie);
+                    });
+                };
+
+                $scope.getAction = function(available) {
+                    return available ? "Rent!" : "Return";
+                }
+            }]);
+
+            app.controller('MovieDetailCtrl', ['$scope', '$routeParams', '$http', function($scope, $routeParams, $http) {
+                $http.get('http://localhost:8000/data/' + $routeParams.movieId + '.json').success(function (data) {
+                    $scope.movie = data;
+                });
+            }]);
+
+            app.filter('isonsale', function() {
+                return function(movie) {
+                    return ((movie.rating < 4 ) && movie.available) ? true : false;
+                };
+            });
+                  
+        </script>
+    </body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html ng-app="Example5">
+    <head>
+        <meta charset="utf-8">
+        <title>Providers</title>
+        <script src="../angular.min.js"></script>
+    </head>
+    <body ng-controller="ProvidersCtrl">
+        <h1>Providers</h1>
+        <ul>
+            <li>Constant: {{name}}</li>
+            <li>Value: {{location.city}}</li>
+            <li>Service: {{catGreetService}}</li>
+            <li>Factory: {{catGreetFactory}}</li>
+            <li>Provider: {{catGreetProvider.greet}}</li>
+        </ul>
+
+        <script>
+            var app = angular.module('Example5', []);
+
+            app.controller('ProvidersCtrl', 
+                ['$scope', '$injector', 'LocationValue', 'CatGreetService', 'CatGreetFactory', 'CatGreetProvider',  
+                    function($scope, $injector, LocationValue, CatGreetService, CatGreetFactory, CatGreetProvider) {
+                        $scope.name = $injector.get('NameConstant');    //  dynamic injections
+                        $scope.location = LocationValue;
+                        $scope.catGreetService = CatGreetService.greet($scope.name);
+                        $scope.catGreetFactory = CatGreetFactory($scope.name);
+                        $scope.catGreetProvider = CatGreetProvider;
+                    }
+                ]
+            );
+
+            app.constant('NameConstant', 'Daniel');
+            app.value('LocationValue', {city: 'Berlin'});
+
+            //  business logic <--> controller communication
+            app.service('CatGreetService', function() {
+                this.greet = function(name) {
+                    return "Hi " + name + ", meow!";
+                }
+            });
+
+            //  returns an object  
+            app.factory('CatGreetFactory', function() {
+                //  you can run some code before
+                return function(name) {
+                    return "Hi " + name + ", meow!";
+                };
+            });
+
+            //  angular low-level thingy
+            app.config(function($provide) {
+                $provide.provider('CatGreetProvider', function() {
+                    this.$get = function(NameConstant) {
+                        return {
+                            greet: "Hi " + NameConstant + ", meow!"
+                        };
+                    };
+                });
+            });
+
+        </script>
+    </body>
+</html>

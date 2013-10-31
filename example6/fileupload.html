@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html ng-app="Example6">
+    <head>
+        <meta charset="utf-8">
+        <title>FileUpload</title>
+        <script src="../angular.min.js"></script>
+    </head>
+    <body ng-controller="FileUploadCtrl">
+    	<h1>I can read from FileReader</h1>
+    	<textarea file-upload ng-model="data"></textarea>
+    	<p>Length: {{data.length}}</p>
+
+        <script>
+            var app = angular.module('Example6', []);
+
+            app.controller('FileUploadCtrl', ['$scope', function($scope) {
+                $scope.data = '';
+            }]);
+
+            app.directive('fileUpload', function($parse) {
+			    return function(scope, element, attrs) {
+			        element.bind('drop', function(e) {
+			            e.preventDefault();
+			            e.stopPropagation();
+			            
+			            //var file = e.originalEvent.dataTransfer.files[0], reader = new FileReader;
+			            var file = e.dataTransfer.files[0], reader = new FileReader;
+			            reader.onload = function(event) {
+			                scope.$apply(function() {
+			                    var content = event.target.result;
+			                    $parse(attrs.ngModel).assign(scope, content);
+			                });
+			            };
+
+			            reader.readAsText(file);
+			            return false;
+			        });
+			    };
+			});
+        </script>
+    </body>
+</html>
